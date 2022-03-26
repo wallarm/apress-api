@@ -1,8 +1,16 @@
-version: '2'
+version: '3.8'
 
 services:
   app:
-    image: abakpress/ruby-app:$RUBY_IMAGE_TAG
+    build:
+      context: .
+      dockerfile: Dockerfile.dip
+      args:
+        gem_user: ${GEM_USER}
+        gem_password: ${GEM_PASSWORD}
+        DOCKER_RUBY_VERSION: $DOCKER_RUBY_VERSION
+      labels:
+        com.wallarm-billing-api.ruby.version: $DOCKER_RUBY_VERSION
     environment:
       - SSH_AUTH_SOCK=/ssh/auth/sock
       - BUNDLE_PATH=/bundle/$DOCKER_RUBY_VERSION
@@ -15,6 +23,13 @@ services:
       - db
 
   db:
-    image: abakpress/postgres-db:$POSTGRES_IMAGE_TAG
+    image: postgres:${PG_VERSION}-alpine
     environment:
       - POSTGRES_DB=docker
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  pg-data:
+    driver: local

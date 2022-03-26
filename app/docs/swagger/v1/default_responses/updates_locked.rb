@@ -1,7 +1,7 @@
 module Swagger
   module V1
     module DefaultResponses
-      module UpdatedLocked
+      module UpdatesLocked
         def self.extended(base)
           base.response 503 do
             key :description, "Закрыто редактирование"

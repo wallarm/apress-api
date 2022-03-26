@@ -2,11 +2,7 @@ module Apress
   module Api
     module V1
       class TokensController < ApiController::Base
-        if (Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR == 2) || Rails::VERSION::MAJOR > 4
-          skip_before_action :authenticate, only: :create
-        else
-          skip_before_filter :authenticate, only: :create
-        end
+        skip_before_action :authenticate, only: :create
 
         def create
           @client = Apress::Api::Client.find_by_access_id!(params.require(:client_id))

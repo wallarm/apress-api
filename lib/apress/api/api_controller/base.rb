@@ -4,18 +4,14 @@ module Apress
       class Base < ActionController::Metal
         abstract!
 
-        if (Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR > 0) || Rails::VERSION::MAJOR > 4
-          include AbstractController::Rendering
-          include ActionView::Rendering
-        end
-        include ActionController::HideActions if Rails::VERSION::MAJOR < 5
+        include AbstractController::Rendering
+        include ActionView::Rendering
         include ActionController::UrlFor
         include ActionController::Redirecting
         include ActionController::Rendering
         include ActionController::Renderers::All
         include ActionController::ConditionalGet
-        include ActionController::RackDelegation if Rails::VERSION::MAJOR < 5
-        include ActionController::ForceSSL
+        include ActionController::ForceSSL if Rails::VERSION::MAJOR == 6 && Rails::VERSION::MINOR == 0
         include AbstractController::Callbacks
         include ActionController::Rescue
         include ActionController::Instrumentation
@@ -25,12 +21,7 @@ module Apress
         include ActionController::Helpers
         include ActionController::Caching
         include AbstractController::AssetPaths
-
-        # https://github.com/rails/strong_parameters/pull/199
-        if Rails::VERSION::MAJOR == 3
-          require "strong_parameters"
-          require "strong_parameters/version"
-        end
+        include AbstractController::Callbacks
 
         if defined?(StrongParameters::VERSION) &&
           Gem::Version.new(StrongParameters::VERSION) <= Gem::Version.new("0.2.3")
@@ -41,15 +32,9 @@ module Apress
         if defined?(::NewRelic)
           include ::NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
-          if Rails::VERSION::MAJOR == 3
-            require "new_relic/agent/instrumentation/rails3/action_controller"
+          #require "new_relic/agent/instrumentation/rails/action_controller"
 
-            include ::NewRelic::Agent::Instrumentation::Rails3::ActionController
-          else
-            require "new_relic/agent/instrumentation/rails/action_controller"
-
-            include ::NewRelic::Agent::Instrumentation::ControllerInstrumentation
-          end
+          include ::NewRelic::Agent::Instrumentation::ControllerInstrumentation
         end
         # :nocov:
 
