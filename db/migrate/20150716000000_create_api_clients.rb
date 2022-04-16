@@ -1,8 +1,4 @@
-if Rails::VERSION::MAJOR > 4
-  MIGRATION_CLASS = ActiveRecord::Migration[4.2]
-else
-  MIGRATION_CLASS = ActiveRecord::Migration
-end
+MIGRATION_CLASS = ActiveRecord::Migration[6.0]
 
 class CreateApiClients < MIGRATION_CLASS
   def up

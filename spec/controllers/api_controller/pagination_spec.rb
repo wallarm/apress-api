@@ -1,21 +1,13 @@
 require "spec_helper"
 
 def form_params(p)
-  if Rails::VERSION::MAJOR > 4
-    {params: p}
-  else
-    p
-  end
+  {params: p}
 end
 
 describe Apress::Api::ApiController::Base, type: :controller do
   describe '#prepare_pagination' do
     controller do
-      if (Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR == 2) || Rails::VERSION::MAJOR > 4
-        skip_before_action :authenticate
-      else
-        skip_before_filter :authenticate
-      end
+      skip_before_action :authenticate
 
       def index
         prepare_pagination(per_page: {max: 100, default: 40})
@@ -26,7 +18,7 @@ describe Apress::Api::ApiController::Base, type: :controller do
     context 'when params present' do
       context 'when params are valid' do
         it 'sets variables' do
-          get :index, form_params(page: 2, per_page: 5)
+          get :index, **form_params(page: 2, per_page: 5)
 
           expect(assigns(:page)).to eq 2
           expect(assigns(:per_page)).to eq 5
@@ -35,13 +27,13 @@ describe Apress::Api::ApiController::Base, type: :controller do
 
       context 'when params are invalid' do
         it 'returns 400 for negative page' do
-          get :index, form_params(page: -1)
+          get :index, **form_params(page: -1)
 
           expect(response.status).to eq 400
         end
 
         it 'returns 400 for > max per_page value' do
-          get :index, form_params(per_page: 101)
+          get :index, **form_params(per_page: 101)
 
           expect(response.status).to eq 400
         end
